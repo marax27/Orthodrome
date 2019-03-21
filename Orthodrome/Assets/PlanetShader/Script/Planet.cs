@@ -4,8 +4,6 @@ using System.Collections;
 [ExecuteInEditMode]
 public class Planet : MonoBehaviour
 {
-	public float rotationSpeed = 1.0f;
-
     public bool mobileShader = false;
     public bool atmosphere = true;
     public bool updateChangeInRealTime = true;
@@ -69,10 +67,6 @@ public class Planet : MonoBehaviour
         if (ringMaterial)
             InitRingMaterial(ringMaterial);
     }
-
-	void Update() {
-		transform.Rotate(Vector3.down * rotationSpeed * Time.deltaTime);
-	}
 
     void LateUpdate()
     {
