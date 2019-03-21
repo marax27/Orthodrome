@@ -337,7 +337,23 @@ PrefabInstance:
       objectReference: {fileID: 4300000, guid: 645cb53c0a6eb6f4792d777556d7af3b, type: 3}
     - target: {fileID: 11402032, guid: 58bc3c564721a5046916b82ffd760350, type: 3}
       propertyPath: updateChangeInRealTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11402032, guid: 58bc3c564721a5046916b82ffd760350, type: 3}
+      propertyPath: mobileShader
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11402032, guid: 58bc3c564721a5046916b82ffd760350, type: 3}
+      propertyPath: atmosphere
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2303080, guid: 58bc3c564721a5046916b82ffd760350, type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2303080, guid: 58bc3c564721a5046916b82ffd760350, type: 3}
+      propertyPath: m_DynamicOccludee
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 58bc3c564721a5046916b82ffd760350, type: 3}
@@ -460,6 +476,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d4a8d816ef037345b74a4933abb944c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1775264023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1775264016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 534981f3a37e801459b064e417b833fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationSpeed: 1
 --- !u!1 &1978068363
 GameObject:
   m_ObjectHideFlags: 0
