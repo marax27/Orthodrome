@@ -137,7 +137,7 @@ Material:
     - _BumpMapStrength: 0.5
     - _BumpScale: 1
     - _CloudShadowsStrength: 0.05
-    - _CloudSpeed: -0.1
+    - _CloudSpeed: -0.025
     - _CloudStrength: 2
     - _Contrast: 0.6
     - _Cutoff: 0.5
