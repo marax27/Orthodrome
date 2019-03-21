@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,6 +22,7 @@ public class Scheduler : MonoBehaviour {
 	void Awake() {
 		canvas = FindObjectOfType<Canvas>();
 
+		// NOTE: Is this a recommended way of obtaining gameObjects in Unity?
 		topArea = canvas.transform.Find("Top Area").gameObject;
 		bottomArea = canvas.transform.Find("Bottom Area").gameObject;
 		leftArea = canvas.transform.Find("Left Area").gameObject;
@@ -29,64 +31,50 @@ public class Scheduler : MonoBehaviour {
 		frontArea = canvas.transform.Find("Front Area").gameObject;
 	}
 
-	void Update() {
-		if (Input.GetKeyDown(KeyCode.Alpha2)) {
-			// Destroy random notification.
-			System.Random rng = new System.Random();
-			int ln = leftArea.transform.childCount;
-			int n = ln + rightArea.transform.childCount;
-			int i = rng.Next(n);
-
-			GameObject sj;
-
-			if (i < ln)
-				sj = leftArea.transform.GetChild(i).gameObject;
-			else
-				sj = rightArea.transform.GetChild(i - ln).gameObject;
-
-			print(string.Format($"~Destroy~ {ln}+rn={n}, {i} -- object: {sj}"));
-			Destroy(sj);
-		}
-	}
-
 	/// <summary>
 	/// Attempt to display a notification. Return true or false, depending
 	/// whether Scheduler succedeed or not.
 	/// </summary>
 	/// <param name="title">Notification title</param>
 	/// <param name="description">Notification description text</param>
-	/// <returns>Returns true if notification's been displayed succesfully.</returns>
+	/// <returns>Returns true if notification has been displayed succesfully.</returns>
 	public bool Request(string title, string description) {
 
-		// Create a Notification object.
-		Notification obj = Instantiate(notificationPrefab) as Notification;
-		obj.titleText.text = title;
-		obj.descriptionText.text = description;
+		// Create Notification object.
+		Notification notification = Instantiate(notificationPrefab) as Notification;
+		notification.titleText.text = title;
+		notification.descriptionText.text = description;
 
 		// Update Canvas in order to update size of notification's RectTransform.
 		Canvas.ForceUpdateCanvases();
-		var height = obj.GetComponent<RectTransform>().rect.height * canvas.scaleFactor;
+		float notificationHeight = canvas.scaleFactor * notification.GetComponent<RectTransform>().rect.height;
 
-		// Assign a parent area.
-		GameObject parent = null;
-		//parent = (Random.Range(0f, 1f) > .5f) ? rightArea.transform : leftArea.transform;
-		parent = leftArea;
+		// Choose area in which the notification will be displayed.
+		GameObject notificationParent = null;
+		GameObject[] possibleParentChoices = new GameObject[2] { leftArea, rightArea };
+		List<GameObject> appropriateParentChoices = new List<GameObject>();
 
-		if(parent.GetComponent<RectTransform>().rect.height * canvas.scaleFactor - parent.GetComponent<VerticalLayoutGroup>().preferredHeight < height) {
-			parent = rightArea;
+		// Pick only those potential parents that can fit a child.
+		foreach(var i in possibleParentChoices) {
+			if (notificationHeight <= i.GetComponent<RectTransform>().rect.height * canvas.scaleFactor - i.GetComponent<VerticalLayoutGroup>().preferredHeight)
+				appropriateParentChoices.Add(i);
 		}
 
-		obj.transform.SetParent(parent.transform);
-
-		// Update parent parameters.
-		// Canvas.ForceUpdateCanvases();
-		parent.GetComponent<VerticalLayoutGroup>().CalculateLayoutInputVertical();
-
-		// On failure, destroy notification and return false.
-		if (parent == null) {
-			Destroy(obj);
+		if(appropriateParentChoices.Count == 0) {
+			// There are no areas that can fit a notification.
+			// TODO: handle this more elaborately.
+			// For now, scheduler will simply return false.
+			Destroy(notification.gameObject);
 			return false;
 		}
+
+		// Set notification's parent - randomly chosen from the list of possible choices.
+		var idx = (new System.Random()).Next(appropriateParentChoices.Count);
+		notificationParent = appropriateParentChoices[idx];
+		notification.transform.SetParent(notificationParent.transform);
+
+		// Update parent layout.
+		notificationParent.GetComponent<VerticalLayoutGroup>().CalculateLayoutInputVertical();
 
 		return true;
 	}
