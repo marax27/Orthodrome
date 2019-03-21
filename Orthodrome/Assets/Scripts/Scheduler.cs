@@ -17,6 +17,8 @@ public class Scheduler : MonoBehaviour {
 	private GameObject centerArea;
 	private GameObject frontArea;
 
+	private Text frontAreaText;
+
 	//************************************************************
 
 	void Awake() {
@@ -29,6 +31,9 @@ public class Scheduler : MonoBehaviour {
 		rightArea = canvas.transform.Find("Right Area").gameObject;
 		centerArea = canvas.transform.Find("Center Area").gameObject;
 		frontArea = canvas.transform.Find("Front Area").gameObject;
+
+		//frontAreaTextObject = frontArea.transform.Find("Front Area Text").gameObject;
+		frontAreaText = frontArea.transform.GetComponentInChildren<Text>(true);
 	}
 
 	/// <summary>
@@ -75,6 +80,22 @@ public class Scheduler : MonoBehaviour {
 
 		// Update parent layout.
 		notificationParent.GetComponent<VerticalLayoutGroup>().CalculateLayoutInputVertical();
+
+		return true;
+	}
+
+	/// <summary>
+	/// Display a priority message in the front area.
+	/// </summary>
+	/// <param name="message"></param>
+	public bool PriorityMessage(string message) {
+		try {
+			frontAreaText.text = message;
+
+			frontArea.SetActive(true);
+		}catch(UnityException) {
+			return false;
+		}
 
 		return true;
 	}
