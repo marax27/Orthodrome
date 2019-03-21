@@ -8,11 +8,9 @@ using UnityEngine;
 /// </summary>
 public class SphericalGeometry : MonoBehaviour {
 
-	Transform myTransform;
 	float radius;
 
 	void Awake() {
-		myTransform = GetComponent<Transform>();
 		radius = GetComponent<SphereCollider>().radius;
 	}
 
