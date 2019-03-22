@@ -9,6 +9,8 @@ public class CenterArea : Area {
 
 	public GameObject sphere;
 
+	public float diameterMultiplier = 1.2f;
+
     void Update() {
 		// Signal if the sphere is out of bounds.
 		GetComponent<Image>().color = IsEntireSphereInArea() ? Color.clear : Color.red;
@@ -20,7 +22,7 @@ public class CenterArea : Area {
 	/// </summary>
 	public bool IsEntireSphereInArea() {
 		Vector3 rightDir = Camera.main.transform.right;
-		Vector3 rightPoint = sphere.transform.position + 1.2f * rightDir * sphere.GetComponent<SphereCollider>().radius;
+		Vector3 rightPoint = sphere.transform.position + diameterMultiplier * rightDir * sphere.GetComponent<SphereCollider>().radius;
 
 		Vector2 screenSphereCenter = Camera.main.WorldToScreenPoint(sphere.transform.position);
 		float visibleDiameter = 2 * ((Vector2)Camera.main.WorldToScreenPoint(rightPoint) - screenSphereCenter).magnitude;
