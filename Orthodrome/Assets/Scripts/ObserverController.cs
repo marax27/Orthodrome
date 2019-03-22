@@ -4,28 +4,37 @@ using UnityEngine;
 
 public class ObserverController : MonoBehaviour {
 
-	public float observerSpeed = 10.0f;
+	public float observerSpeed = 10f;
+	public Transform objectOfInterestTransform;
+	public float orbitRadius = 40f;
+
+	public bool devMode = false;
 
 	Vector3 velocity;
+	float orbitPhase;  //angle that determines viewer's position around the planet
 
 	void FixedUpdate() {
-		transform.position += observerSpeed * velocity.normalized * Time.fixedDeltaTime;
+		if (devMode) {
+			transform.position += observerSpeed * velocity.normalized * Time.fixedDeltaTime;
+		} else {
+			transform.position = objectOfInterestTransform.position + orbitRadius * new Vector3(Mathf.Cos(orbitPhase), 0f, Mathf.Sin(orbitPhase));
+		}
 	}
 
 	void Update() {
-		// Position.
-		int verticalAxisMove = (Input.GetKey(KeyCode.Space) ? 1 : 0) - (Input.GetKey(KeyCode.LeftShift) ? 1 : 0);
+		if (devMode) {
+			// Position.
+			int verticalAxisMove = (Input.GetKey(KeyCode.Space) ? 1 : 0) - (Input.GetKey(KeyCode.LeftShift) ? 1 : 0);
 
-		velocity = transform.forward * Input.GetAxisRaw("Vertical")
-		         + transform.right * Input.GetAxisRaw("Horizontal")
-		         + transform.up * verticalAxisMove;
+			velocity = transform.forward * Input.GetAxisRaw("Vertical")
+					 + transform.right * Input.GetAxisRaw("Horizontal")
+					 + transform.up * verticalAxisMove;
+		} else {
+			orbitPhase += observerSpeed * Time.deltaTime;
+		}
+	}
 
-		// Orientation.
-		var pitch = Input.GetAxis("Mouse Y") * -150.0f * Time.deltaTime;
-		var yaw = Input.GetAxis("Mouse X") * 150.0f * Time.deltaTime;
-		var roll = (Input.GetMouseButton(1) ? yaw : 0.0f);
-		if (roll != 0.0f)
-			yaw = 0.0f;
-		transform.Rotate(pitch, yaw, roll);
+	void LateUpdate() {
+		transform.LookAt(objectOfInterestTransform);
 	}
 }
