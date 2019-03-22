@@ -8,6 +8,9 @@ public class Scheduler : MonoBehaviour {
 	[Header("Prefabs")]
 	public Notification notificationPrefab;
 
+	[Header("Others")]
+	public float frontAreaTransitionTime = 1f;
+
 	private Canvas canvas;
 
 	private GameObject topArea;
@@ -20,8 +23,6 @@ public class Scheduler : MonoBehaviour {
 	private Text frontAreaText;
 	private Color frontAreaTextFinalColor;
 	private Color frontAreaFinalBackgroundColor;
-
-	public float frontAreaTransitionTime = 1f;
 
 	//************************************************************
 
@@ -59,7 +60,7 @@ public class Scheduler : MonoBehaviour {
 
 		// Update Canvas in order to update size of notification's RectTransform.
 		Canvas.ForceUpdateCanvases();
-		float notificationHeight = canvas.scaleFactor * notification.GetComponent<RectTransform>().rect.height;
+		float notificationHeight = NotificationHeight(notification);
 
 		// Choose area in which the notification will be displayed.
 		GameObject notificationParent = null;
@@ -68,7 +69,7 @@ public class Scheduler : MonoBehaviour {
 
 		// Pick only those potential parents that can fit a child.
 		foreach(var i in possibleParentChoices) {
-			if (notificationHeight <= i.GetComponent<RectTransform>().rect.height * canvas.scaleFactor - i.GetComponent<VerticalLayoutGroup>().preferredHeight)
+			if (notificationHeight <= FreeSpaceInArea(i))
 				appropriateParentChoices.Add(i);
 		}
 
@@ -135,5 +136,22 @@ public class Scheduler : MonoBehaviour {
 
 		if (!appear)
 			frontArea.SetActive(false);
+	}
+
+	/// <summary>
+	/// Get notification height, in pixels.
+	/// </summary>
+	/// <param name="notif"></param>
+	float NotificationHeight(Notification notif) {
+		return canvas.scaleFactor * notif.GetComponent<RectTransform>().rect.height;
+	}
+
+	/// <summary>
+	/// Get height (in pixels) of the remaining free space in the area.
+	/// </summary>
+	/// <param name="area"></param>
+	float FreeSpaceInArea(GameObject area) {
+		return area.GetComponent<RectTransform>().rect.height * canvas.scaleFactor
+			   - area.GetComponent<VerticalLayoutGroup>().preferredHeight;
 	}
 }
