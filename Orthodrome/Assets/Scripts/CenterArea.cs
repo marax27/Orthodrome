@@ -22,7 +22,7 @@ public class CenterArea : Area {
 	/// </summary>
 	public bool IsEntireSphereInArea() {
 		Vector3 rightDir = Camera.main.transform.right;
-		Vector3 rightPoint = sphere.transform.position + diameterMultiplier * rightDir * sphere.GetComponent<SphereCollider>().radius;
+		Vector3 rightPoint = sphere.transform.position + diameterMultiplier * rightDir * sphere.transform.localScale.x;
 
 		Vector2 screenSphereCenter = Camera.main.WorldToScreenPoint(sphere.transform.position);
 		float visibleDiameter = 2 * ((Vector2)Camera.main.WorldToScreenPoint(rightPoint) - screenSphereCenter).magnitude;
