@@ -10,6 +10,7 @@ public class Scheduler : MonoBehaviour {
 
 	[Header("Others")]
 	public float frontAreaTransitionTime = 1f;
+	public float notificationTransitionTime = .3f;
 
 	private Canvas canvas;
 
@@ -100,6 +101,7 @@ public class Scheduler : MonoBehaviour {
 		notificationParent.GetComponent<VerticalLayoutGroup>().CalculateLayoutInputVertical();
 
 		notificationQueue.Enqueue(notification);
+		StartCoroutine(notification.AnimateAppearance(notificationTransitionTime));
 
 		return true;
 	}
