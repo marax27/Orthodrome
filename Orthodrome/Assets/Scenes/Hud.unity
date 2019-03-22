@@ -784,6 +784,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   notificationPrefab: {fileID: 6333676243553314981, guid: 89083ab176fb5f342a7c7779280baae2,
     type: 3}
+  frontAreaTransitionTime: 0.25
 --- !u!1 &1566689107
 GameObject:
   m_ObjectHideFlags: 0

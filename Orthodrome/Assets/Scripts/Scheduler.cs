@@ -18,6 +18,10 @@ public class Scheduler : MonoBehaviour {
 	private GameObject frontArea;
 
 	private Text frontAreaText;
+	private Color frontAreaTextFinalColor;
+	private Color frontAreaFinalBackgroundColor;
+
+	public float frontAreaTransitionTime = 1f;
 
 	//************************************************************
 
@@ -34,6 +38,9 @@ public class Scheduler : MonoBehaviour {
 
 		//frontAreaTextObject = frontArea.transform.Find("Front Area Text").gameObject;
 		frontAreaText = frontArea.transform.GetComponentInChildren<Text>(true);
+		frontAreaTextFinalColor = frontAreaText.color;
+
+		frontAreaFinalBackgroundColor = frontArea.GetComponent<Image>().color;
 	}
 
 	/// <summary>
@@ -93,10 +100,40 @@ public class Scheduler : MonoBehaviour {
 			frontAreaText.text = message;
 
 			frontArea.SetActive(true);
+			StartCoroutine(AnimateFrontAreaAppearance(frontAreaTransitionTime, true));
 		}catch(UnityException) {
 			return false;
 		}
 
 		return true;
+	}
+
+	/// <summary>
+	/// Smoothly bring the front area to the screen. If 'appear' is true,
+	/// the area will appear on the screen; otherwise, it will vanish.
+	/// </summary>
+	/// <param name="time"></param>
+	/// <param name="appear"></param>
+	IEnumerator AnimateFrontAreaAppearance(float time, bool appear) {
+		if (!frontArea.activeSelf)
+			frontArea.SetActive(true);
+
+		Color startAreaColor = appear ? Color.clear : frontAreaFinalBackgroundColor;
+		Color startTextColor = appear ? Color.clear : frontAreaTextFinalColor;
+		Color finalAreaColor = appear ? frontAreaFinalBackgroundColor : Color.clear;
+		Color finalTextColor = appear ? frontAreaTextFinalColor : Color.clear;
+
+		float percent = 0f;
+		float animationSpeed = 1f / time;
+
+		while (percent < 1f) {
+			percent += Time.deltaTime * animationSpeed;
+			frontArea.GetComponent<Image>().color = Color.Lerp(startAreaColor, finalAreaColor, percent);
+			frontAreaText.color = Color.Lerp(startTextColor, finalTextColor, percent);
+			yield return null;
+		}
+
+		if (!appear)
+			frontArea.SetActive(false);
 	}
 }
