@@ -24,6 +24,8 @@ public class Scheduler : MonoBehaviour {
 	private Color frontAreaTextFinalColor;
 	private Color frontAreaFinalBackgroundColor;
 
+	private Queue<Notification> notificationQueue = new Queue<Notification>();
+
 	//************************************************************
 
 	void Awake() {
@@ -67,18 +69,26 @@ public class Scheduler : MonoBehaviour {
 		GameObject[] possibleParentChoices = new GameObject[2] { leftArea, rightArea };
 		List<GameObject> appropriateParentChoices = new List<GameObject>();
 
-		// Pick only those potential parents that can fit a child.
-		foreach(var i in possibleParentChoices) {
-			if (notificationHeight <= FreeSpaceInArea(i))
-				appropriateParentChoices.Add(i);
-		}
+		while(appropriateParentChoices.Count == 0) {
+			// Pick only those potential parents that can fit a child.
+			foreach (var i in possibleParentChoices) {
+				if (notificationHeight <= FreeSpaceInArea(i))
+					appropriateParentChoices.Add(i);
+			}
 
-		if(appropriateParentChoices.Count == 0) {
-			// There are no areas that can fit a notification.
-			// TODO: handle this more elaborately.
-			// For now, scheduler will simply return false.
-			Destroy(notification.gameObject);
-			return false;
+			if (appropriateParentChoices.Count == 0) {
+				// There are no areas that can fit a notification.
+				// Remove first notification in the queue and try again.
+
+				if(notificationQueue.Count == 0) {
+					// Beyond reason! No notifications left, and still not enough free space.
+					Destroy(notification.gameObject);
+					return false;
+				}
+
+				DestroyImmediate(notificationQueue.Dequeue().gameObject);
+				Canvas.ForceUpdateCanvases();
+			}
 		}
 
 		// Set notification's parent - randomly chosen from the list of possible choices.
@@ -88,6 +98,8 @@ public class Scheduler : MonoBehaviour {
 
 		// Update parent layout.
 		notificationParent.GetComponent<VerticalLayoutGroup>().CalculateLayoutInputVertical();
+
+		notificationQueue.Enqueue(notification);
 
 		return true;
 	}
