@@ -36,9 +36,11 @@ public class ObserverController : MonoBehaviour {
 		} else {
 			orbitPhase += observerSpeed / orbitRadius * Time.deltaTime;
 
-			// Check if the planet isn't out of bounds.
-			if (!centerArea.IsEntireSphereInArea())
-				StartCoroutine(AdjustOrbitRadius());
+			// Check if the planet fits within centerArea, and uses as much space as it can.
+			if (!centerArea.IsEntireSphereInArea() || centerArea.GetSphereOccupancyPercentage() < .8f) {
+				StopCoroutine("AdjustOrbitRadius");
+				StartCoroutine("AdjustOrbitRadius");
+			}
 		}
 	}
 
@@ -52,7 +54,7 @@ public class ObserverController : MonoBehaviour {
 	/// </summary>
 	IEnumerator AdjustOrbitRadius() {
 		bool initialState = centerArea.IsEntireSphereInArea();
-		float radiusStep = .05f * (initialState ? -1 : +1);
+		float radiusStep = .1f * (initialState ? -1 : +1);
 
 		while (centerArea.IsEntireSphereInArea() == initialState) {
 			orbitRadius += radiusStep;
