@@ -615,6 +615,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hud Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 9069546392725060613, guid: e24f24531fd8e554a848544042e0d2a3,
+        type: 3}
+      propertyPath: sphere
+      value: 
+      objectReference: {fileID: 1775264016}
+    - target: {fileID: 9069546392725060613, guid: e24f24531fd8e554a848544042e0d2a3,
+        type: 3}
+      propertyPath: f1
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 9069546392725060613, guid: e24f24531fd8e554a848544042e0d2a3,
+        type: 3}
+      propertyPath: f2
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 9069546393026017186, guid: e24f24531fd8e554a848544042e0d2a3,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -719,21 +734,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9069546392725060613, guid: e24f24531fd8e554a848544042e0d2a3,
-        type: 3}
-      propertyPath: sphere
-      value: 
-      objectReference: {fileID: 1775264016}
-    - target: {fileID: 9069546392725060613, guid: e24f24531fd8e554a848544042e0d2a3,
-        type: 3}
-      propertyPath: f1
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 9069546392725060613, guid: e24f24531fd8e554a848544042e0d2a3,
-        type: 3}
-      propertyPath: f2
-      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e24f24531fd8e554a848544042e0d2a3, type: 3}
