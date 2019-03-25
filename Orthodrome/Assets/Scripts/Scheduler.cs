@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Scheduler : MonoBehaviour {
 
 	[Header("Prefabs")]
-	public Notification notificationPrefab;
+	public TextNotification notificationPrefab;
 
 	[Header("Others")]
 	public float frontAreaTransitionTime = 1f;
@@ -25,7 +25,7 @@ public class Scheduler : MonoBehaviour {
 	private Color frontAreaTextFinalColor;
 	private Color frontAreaFinalBackgroundColor;
 
-	private Queue<Notification> notificationQueue = new Queue<Notification>();
+	private Queue<BaseNotification> notificationQueue = new Queue<BaseNotification>();
 
 	//************************************************************
 
@@ -54,12 +54,7 @@ public class Scheduler : MonoBehaviour {
 	/// <param name="title">Notification title</param>
 	/// <param name="description">Notification description text</param>
 	/// <returns>Returns true if notification has been displayed succesfully.</returns>
-	public bool Request(string title, string description) {
-
-		// Create Notification object.
-		Notification notification = Instantiate(notificationPrefab) as Notification;
-		notification.titleText.text = title;
-		notification.descriptionText.text = description;
+	public bool Request(BaseNotification notification) {
 
 		// Update Canvas in order to update size of notification's RectTransform.
 		Canvas.ForceUpdateCanvases();
@@ -156,8 +151,8 @@ public class Scheduler : MonoBehaviour {
 	/// Get notification height, in pixels.
 	/// </summary>
 	/// <param name="notif"></param>
-	float NotificationHeight(Notification notif) {
-		return canvas.scaleFactor * notif.GetComponent<RectTransform>().rect.height;
+	float NotificationHeight(BaseNotification notif) {
+		return canvas.scaleFactor * notif.GetUnscaledHeight();
 	}
 
 	/// <summary>
