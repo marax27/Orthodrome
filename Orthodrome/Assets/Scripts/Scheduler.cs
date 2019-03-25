@@ -14,12 +14,12 @@ public class Scheduler : MonoBehaviour {
 
 	private Canvas canvas;
 
-	private GameObject topArea;
-	private GameObject bottomArea;
-	private GameObject leftArea;
-	private GameObject rightArea;
-	private GameObject centerArea;
-	private GameObject frontArea;
+	private Area topArea;
+	private Area bottomArea;
+	private Area leftArea;
+	private Area rightArea;
+	private Area centerArea;
+	private Area frontArea;
 
 	private Text frontAreaText;
 	private Color frontAreaTextFinalColor;
@@ -33,12 +33,12 @@ public class Scheduler : MonoBehaviour {
 		canvas = FindObjectOfType<Canvas>();
 
 		// NOTE: Is this a recommended way of obtaining gameObjects in Unity?
-		topArea = canvas.transform.Find("Top Area").gameObject;
-		bottomArea = canvas.transform.Find("Bottom Area").gameObject;
-		leftArea = canvas.transform.Find("Left Area").gameObject;
-		rightArea = canvas.transform.Find("Right Area").gameObject;
-		centerArea = canvas.transform.Find("Center Area").gameObject;
-		frontArea = canvas.transform.Find("Front Area").gameObject;
+		topArea = canvas.transform.Find("Top Area").GetComponent<Area>();
+		bottomArea = canvas.transform.Find("Bottom Area").GetComponent<Area>();
+		leftArea = canvas.transform.Find("Left Area").GetComponent<Area>();
+		rightArea = canvas.transform.Find("Right Area").GetComponent<Area>();
+		centerArea = canvas.transform.Find("Center Area").GetComponent<Area>();
+		frontArea = canvas.transform.Find("Front Area").GetComponent<Area>();
 
 		//frontAreaTextObject = frontArea.transform.Find("Front Area Text").gameObject;
 		frontAreaText = frontArea.transform.GetComponentInChildren<Text>(true);
@@ -66,9 +66,9 @@ public class Scheduler : MonoBehaviour {
 		float notificationHeight = NotificationHeight(notification);
 
 		// Choose area in which the notification will be displayed.
-		GameObject notificationParent = null;
-		GameObject[] possibleParentChoices = new GameObject[2] { leftArea, rightArea };
-		List<GameObject> appropriateParentChoices = new List<GameObject>();
+		Area notificationParent = null;
+		Area[] possibleParentChoices = new Area[] { leftArea, rightArea };
+		List<Area> appropriateParentChoices = new List<Area>();
 
 		while(appropriateParentChoices.Count == 0) {
 			// Pick only those potential parents that can fit a child.
@@ -114,7 +114,7 @@ public class Scheduler : MonoBehaviour {
 		try {
 			frontAreaText.text = message;
 
-			frontArea.SetActive(true);
+			frontArea.gameObject.SetActive(true);
 			StartCoroutine(AnimateFrontAreaAppearance(frontAreaTransitionTime, true));
 		}catch(UnityException) {
 			return false;
@@ -130,8 +130,8 @@ public class Scheduler : MonoBehaviour {
 	/// <param name="time"></param>
 	/// <param name="appear"></param>
 	IEnumerator AnimateFrontAreaAppearance(float time, bool appear) {
-		if (!frontArea.activeSelf)
-			frontArea.SetActive(true);
+		if (!frontArea.gameObject.activeSelf)
+			frontArea.gameObject.SetActive(true);
 
 		Color startAreaColor = appear ? Color.clear : frontAreaFinalBackgroundColor;
 		Color startTextColor = appear ? Color.clear : frontAreaTextFinalColor;
@@ -149,7 +149,7 @@ public class Scheduler : MonoBehaviour {
 		}
 
 		if (!appear)
-			frontArea.SetActive(false);
+			frontArea.gameObject.SetActive(false);
 	}
 
 	/// <summary>
@@ -164,8 +164,7 @@ public class Scheduler : MonoBehaviour {
 	/// Get height (in pixels) of the remaining free space in the area.
 	/// </summary>
 	/// <param name="area"></param>
-	float FreeSpaceInArea(GameObject area) {
-		return area.GetComponent<RectTransform>().rect.height * canvas.scaleFactor
-			   - area.GetComponent<VerticalLayoutGroup>().preferredHeight;
+	float FreeSpaceInArea(Area area) {
+		return area.GetHeight() - area.GetComponent<VerticalLayoutGroup>().preferredHeight;
 	}
 }
