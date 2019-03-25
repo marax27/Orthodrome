@@ -9,6 +9,7 @@ using UnityEngine;
 public class NotificationFactory : MonoBehaviour {
 
 	public TextNotification textNotification;
+	public TimerNotification timerNotification;
 
 	/// <summary>
 	/// Access an instance of NotificationFactory present at the scene.
@@ -24,6 +25,13 @@ public class NotificationFactory : MonoBehaviour {
 		var result = Instantiate(textNotification) as TextNotification;
 		result.titleText.text = title;
 		result.descriptionText.text = description;
+		return result;
+	}
+
+	public TimerNotification GetTimer(string title, string countdownTime) {
+		var result = Instantiate(timerNotification) as TimerNotification;
+		result.titleText.text = title;
+		result.SetCountdownTime(countdownTime);
 		return result;
 	}
 }
