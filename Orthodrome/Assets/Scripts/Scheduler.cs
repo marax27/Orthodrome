@@ -8,8 +8,6 @@ public class Scheduler : MonoBehaviour {
 	public float frontAreaTransitionTime = 1f;
 	public float notificationTransitionTime = .3f;
 
-	private Canvas canvas;
-
 	private Area topArea;
 	private Area bottomArea;
 	private Area leftArea;
@@ -26,15 +24,13 @@ public class Scheduler : MonoBehaviour {
 	//************************************************************
 
 	void Awake() {
-		canvas = FindObjectOfType<Canvas>();
-
 		// NOTE: Is this a recommended way of obtaining gameObjects in Unity?
-		topArea = canvas.transform.Find("Top Area").GetComponent<Area>();
-		bottomArea = canvas.transform.Find("Bottom Area").GetComponent<Area>();
-		leftArea = canvas.transform.Find("Left Area").GetComponent<Area>();
-		rightArea = canvas.transform.Find("Right Area").GetComponent<Area>();
-		centerArea = canvas.transform.Find("Center Area").GetComponent<Area>();
-		frontArea = canvas.transform.Find("Front Area").GetComponent<Area>();
+		topArea = transform.Find("Top Area").GetComponent<Area>();
+		bottomArea = transform.Find("Bottom Area").GetComponent<Area>();
+		leftArea = transform.Find("Left Area").GetComponent<Area>();
+		rightArea = transform.Find("Right Area").GetComponent<Area>();
+		centerArea = transform.Find("Center Area").GetComponent<Area>();
+		frontArea = transform.Find("Front Area").GetComponent<Area>();
 
 		//frontAreaTextObject = frontArea.transform.Find("Front Area Text").gameObject;
 		frontAreaText = frontArea.transform.GetComponentInChildren<Text>(true);
@@ -148,7 +144,7 @@ public class Scheduler : MonoBehaviour {
 	/// </summary>
 	/// <param name="notif"></param>
 	float NotificationHeight(BaseNotification notif) {
-		return canvas.scaleFactor * notif.GetUnscaledHeight();
+		return GetComponent<Canvas>().scaleFactor * notif.GetUnscaledHeight();
 	}
 
 	/// <summary>
