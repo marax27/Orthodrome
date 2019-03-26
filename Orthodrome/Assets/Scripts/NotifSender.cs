@@ -48,6 +48,8 @@ public class NotifSender : MonoBehaviour {
 	}
 
 	void SendRequest() {
-		scheduler.Request("Title", descriptions[rnd.Next(descriptions.Length)]);
+		//scheduler.Request("Title", descriptions[rnd.Next(descriptions.Length)]);
+		string description = descriptions[rnd.Next(descriptions.Length)];
+		scheduler.Request(NotificationFactory.Instance.GetText("Title", description));
 	}
 }

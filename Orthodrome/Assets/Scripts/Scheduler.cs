@@ -5,14 +5,8 @@ using UnityEngine.UI;
 
 public class Scheduler : MonoBehaviour {
 
-	[Header("Prefabs")]
-	public Notification notificationPrefab;
-
-	[Header("Others")]
 	public float frontAreaTransitionTime = 1f;
 	public float notificationTransitionTime = .3f;
-
-	private Canvas canvas;
 
 	private Area topArea;
 	private Area bottomArea;
@@ -25,20 +19,18 @@ public class Scheduler : MonoBehaviour {
 	private Color frontAreaTextFinalColor;
 	private Color frontAreaFinalBackgroundColor;
 
-	private Queue<Notification> notificationQueue = new Queue<Notification>();
+	private Queue<BaseNotification> notificationQueue = new Queue<BaseNotification>();
 
 	//************************************************************
 
 	void Awake() {
-		canvas = FindObjectOfType<Canvas>();
-
 		// NOTE: Is this a recommended way of obtaining gameObjects in Unity?
-		topArea = canvas.transform.Find("Top Area").GetComponent<Area>();
-		bottomArea = canvas.transform.Find("Bottom Area").GetComponent<Area>();
-		leftArea = canvas.transform.Find("Left Area").GetComponent<Area>();
-		rightArea = canvas.transform.Find("Right Area").GetComponent<Area>();
-		centerArea = canvas.transform.Find("Center Area").GetComponent<Area>();
-		frontArea = canvas.transform.Find("Front Area").GetComponent<Area>();
+		topArea = transform.Find("Top Area").GetComponent<Area>();
+		bottomArea = transform.Find("Bottom Area").GetComponent<Area>();
+		leftArea = transform.Find("Left Area").GetComponent<Area>();
+		rightArea = transform.Find("Right Area").GetComponent<Area>();
+		centerArea = transform.Find("Center Area").GetComponent<Area>();
+		frontArea = transform.Find("Front Area").GetComponent<Area>();
 
 		//frontAreaTextObject = frontArea.transform.Find("Front Area Text").gameObject;
 		frontAreaText = frontArea.transform.GetComponentInChildren<Text>(true);
@@ -54,12 +46,7 @@ public class Scheduler : MonoBehaviour {
 	/// <param name="title">Notification title</param>
 	/// <param name="description">Notification description text</param>
 	/// <returns>Returns true if notification has been displayed succesfully.</returns>
-	public bool Request(string title, string description) {
-
-		// Create Notification object.
-		Notification notification = Instantiate(notificationPrefab) as Notification;
-		notification.titleText.text = title;
-		notification.descriptionText.text = description;
+	public bool Request(BaseNotification notification) {
 
 		// Update Canvas in order to update size of notification's RectTransform.
 		Canvas.ForceUpdateCanvases();
@@ -156,8 +143,8 @@ public class Scheduler : MonoBehaviour {
 	/// Get notification height, in pixels.
 	/// </summary>
 	/// <param name="notif"></param>
-	float NotificationHeight(Notification notif) {
-		return canvas.scaleFactor * notif.GetComponent<RectTransform>().rect.height;
+	float NotificationHeight(BaseNotification notif) {
+		return GetComponent<Canvas>().scaleFactor * notif.GetUnscaledHeight();
 	}
 
 	/// <summary>
