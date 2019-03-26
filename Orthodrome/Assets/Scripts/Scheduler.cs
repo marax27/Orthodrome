@@ -5,10 +5,6 @@ using UnityEngine.UI;
 
 public class Scheduler : MonoBehaviour {
 
-	[Header("Prefabs")]
-	public TextNotification notificationPrefab;
-
-	[Header("Others")]
 	public float frontAreaTransitionTime = 1f;
 	public float notificationTransitionTime = .3f;
 
