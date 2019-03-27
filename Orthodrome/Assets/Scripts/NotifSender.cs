@@ -32,7 +32,8 @@ public class NotifSender : MonoBehaviour {
 	}
 
 	void Start() {
-		InvokeRepeating("SendRequest", 3f, 2f);
+		InvokeRepeating("SendRequest", 1f, 2f);
+		// Invoke("SendRequest", 1.5f);
 	}
 
 	void Update() {
@@ -43,13 +44,17 @@ public class NotifSender : MonoBehaviour {
 			scheduler.PriorityMessage("2 MINUTES TO MIDNIGHT");
 		}
 
+		if (sphere == null)
+			return;
+
 		var sphereMovement = Input.GetAxisRaw("Vertical");
 		sphere.transform.position += sphere.transform.forward * sphereMovement * sphereSpeed * Time.deltaTime;
 	}
 
 	void SendRequest() {
-		//scheduler.Request("Title", descriptions[rnd.Next(descriptions.Length)]);
+		// scheduler.Request("Title", descriptions[rnd.Next(descriptions.Length)]);
 		string description = descriptions[rnd.Next(descriptions.Length)];
 		scheduler.Request(NotificationFactory.Instance.GetText("Title", description));
+		// scheduler.Request(NotificationFactory.Instance.GetTimer("Timer #1", "2019-03-30 21:59:25"));
 	}
 }
