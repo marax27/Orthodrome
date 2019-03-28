@@ -6,12 +6,15 @@
 /// </summary>
 public interface IPlugin {
 
-	NotificationFactory Factory { set; }
 	Scheduler Scheduler { set; }
+
+	///<summary>
+	/// Method called by PluginManager for each newly created plugin.
+	///</summary>
+	void Start();
 
 	// Properties.
 	string Name { get; }
 	string Author { get; }
 	string Description { get; }
-
 }

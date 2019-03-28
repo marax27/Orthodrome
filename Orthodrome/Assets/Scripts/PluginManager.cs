@@ -13,9 +13,8 @@ public class PluginManager : MonoBehaviour
 	List<IPlugin> plugins = new List<IPlugin>();
 
 	public Scheduler scheduler;
-	public NotificationFactory factory;
 
-    void Start() {
+	void Start() {
 		Assembly assembly = Assembly.GetExecutingAssembly();
 		string location = Path.GetDirectoryName(assembly.Location);
 		// print("Searching for plugins at " + location);
@@ -49,8 +48,9 @@ public class PluginManager : MonoBehaviour
 
 	void InitializePlugins() {
 		foreach(IPlugin plugin in plugins) {
-			plugin.Factory = factory;
 			plugin.Scheduler = scheduler;
+			plugin.Start();
+			// print("Processed " + plugin.Name);
 		}
 	}
 }
