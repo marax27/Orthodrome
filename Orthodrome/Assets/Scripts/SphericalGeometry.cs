@@ -8,12 +8,6 @@ using UnityEngine;
 /// </summary>
 public class SphericalGeometry : MonoBehaviour {
 
-	float radius;
-
-	void Awake() {
-		radius = GetComponent<SphereCollider>().radius;
-	}
-
 	//------------------------------------------------------------
 
 	/// <summary>
@@ -31,7 +25,7 @@ public class SphericalGeometry : MonoBehaviour {
 	/// </summary>
 	public Vector3 GeoCoord2WorldPoint(GeoCoord coords) {
 		Vector3 localPoint = GeoCoord2LocalPoint(coords);
-		return transform.TransformPoint(radius * localPoint);
+		return transform.TransformPoint(localPoint);
 	}
 
 
@@ -70,6 +64,18 @@ public class SphericalGeometry : MonoBehaviour {
 		);
 
 		return localPoint;
+	}
+
+	//------------------------------------------------------------
+
+	public Vector3 GetWorldPointAboveGround(Vector3 worldPoint, float height) {
+		Vector3 r = worldPoint - transform.position;
+		return worldPoint + height * r.normalized;
+	}
+
+	public Vector3 GetLocalPointAboveGround(Vector3 localPoint, float height) {
+		Vector3 r = localPoint;
+		return (1 + height) * r;
 	}
 
 	//------------------------------------------------------------
