@@ -98,4 +98,34 @@ public class SphericalGeometry : MonoBehaviour {
 	}
 
 	//------------------------------------------------------------
+
+	/// <summary>
+	/// A base class for any line of interest on the sphere's surface.
+	/// </summary>
+	public abstract class GeoLine {
+		public GeoCoord[] Points { get; protected set; }
+
+		public GeoLine(SphericalGeometry outerInstance, GeoCoord startPoint, GeoCoord endPoint, int numberOfPoints) {
+			if (numberOfPoints < 2)
+				throw new System.ArgumentException($"Invalid number of points. Expected: >= 2, provided: {numberOfPoints}");
+
+			outer = outerInstance;
+
+			Points = new GeoCoord[numberOfPoints];
+			Points[0] = startPoint;
+			Points[numberOfPoints - 1] = endPoint;
+
+			ComputePoints();
+		}
+
+		/// <summary>
+		/// Compute all points along the line of interest. Note that
+		/// the start & end points are already known.
+		/// </summary>
+		protected abstract void ComputePoints();
+
+		private SphericalGeometry outer;
+	}
+
+	//------------------------------------------------------------
 }
