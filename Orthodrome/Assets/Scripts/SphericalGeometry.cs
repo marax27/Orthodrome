@@ -103,7 +103,6 @@ public class SphericalGeometry : MonoBehaviour {
 	/// A base class for any line of interest on the sphere's surface.
 	/// </summary>
 	public abstract class GeoLine {
-		public GeoCoord[] Points { get; protected set; }
 
 		public GeoLine(SphericalGeometry outerInstance, GeoCoord startPoint, GeoCoord endPoint, int numberOfPoints) {
 			if (numberOfPoints < 2)
@@ -111,12 +110,32 @@ public class SphericalGeometry : MonoBehaviour {
 
 			outer = outerInstance;
 
-			Points = new GeoCoord[numberOfPoints];
-			Points[0] = startPoint;
-			Points[numberOfPoints - 1] = endPoint;
+			Points = new Vector3[numberOfPoints];
+			this.startPoint = startPoint;
+			this.endPoint = endPoint;
+			Points[0] = outer.GeoCoord2LocalPoint(startPoint);
+			Points[numberOfPoints - 1] = outer.GeoCoord2LocalPoint(endPoint);
 
 			ComputePoints();
 		}
+
+		/// <summary>
+		/// Modify height of each point, according to func. func receives value
+		/// from range [0, 1] that indicates progress along the path.
+		/// 0: line's starting point. 1: end point.
+		/// </summary>
+		/// <param name="func"></param>
+		public void AdjustHeight(System.Func<float, float> func) {
+			for (int i = 0; i < Points.Length; ++i) {
+				float percent = i / (float)(Points.Length - 1);
+				Points[i] = outer.GetLocalPointAboveGround(Points[i], func(percent));
+			}
+		}
+
+		/// <summary>
+		/// Array of points in sphere's coordinate system.
+		/// </summary>
+		public Vector3[] Points { get; }
 
 		/// <summary>
 		/// Compute all points along the line of interest. Note that
@@ -124,7 +143,9 @@ public class SphericalGeometry : MonoBehaviour {
 		/// </summary>
 		protected abstract void ComputePoints();
 
-		private SphericalGeometry outer;
+		protected SphericalGeometry outer;
+		protected GeoCoord startPoint;
+		protected GeoCoord endPoint;
 	}
 
 	//------------------------------------------------------------

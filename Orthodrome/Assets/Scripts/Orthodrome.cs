@@ -10,15 +10,17 @@ public class Orthodrome : GeoLine {
 
 	protected override void ComputePoints() {
 		// Precompute some values that will be used in later calculations.
-		lat1 = Mathf.Deg2Rad * Points[0].latitude;
-		lng1 = Mathf.Deg2Rad * Points[0].longitude;
-		lat2 = Mathf.Deg2Rad * Points[Points.Length - 1].latitude;
-		lng2 = Mathf.Deg2Rad * Points[Points.Length - 1].longitude;
+		lat1 = Mathf.Deg2Rad * startPoint.latitude;
+		lng1 = Mathf.Deg2Rad * startPoint.longitude;
+		lat2 = Mathf.Deg2Rad * endPoint.latitude;
+		lng2 = Mathf.Deg2Rad * endPoint.longitude;
 		lng_diff = Mathf.Abs(lng2 - lng1);
 
 		// Compute all points except for the first and last one.
-		for (int i = 1; i < Points.Length - 1; ++i)
-			Points[i] = ComputeSinglePoint(i / (float)Points.Length);
+		for (int i = 1; i < Points.Length - 1; ++i) {
+			var gc = ComputeSinglePoint(i / (float)Points.Length);
+			Points[i] = outer.GeoCoord2LocalPoint(gc);
+		}
 	}
 
 	private GeoCoord ComputeSinglePoint(float percent) {
