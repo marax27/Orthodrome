@@ -8,23 +8,38 @@ using UnityEngine;
 /// </summary>
 public class SphericalGeometry : MonoBehaviour {
 
-	float radius;
+	//------------------------------------------------------------
 
-	void Awake() {
-		radius = GetComponent<SphereCollider>().radius;
+	/// <summary>
+	/// Get geographic coordinates of the worldPoint, or the point where
+	/// the line worldPoint-sphere center intersects surface of the sphere).
+	/// </summary>
+	public GeoCoord WorldPoint2GeoCoord(Vector3 worldPoint) {
+		Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
+		return LocalPoint2GeoCoord(localPoint);
 	}
 
 	/// <summary>
-	/// Get geographic coordinates of the worldPoint
-	/// (or the point where the line worldPoint-sphere center
+	/// Get coordinates (in world space) of the point described
+	/// by given geographic coordinates.
+	/// </summary>
+	public Vector3 GeoCoord2WorldPoint(GeoCoord coords) {
+		Vector3 localPoint = GeoCoord2LocalPoint(coords);
+		return transform.TransformPoint(localPoint);
+	}
+
+
+	//------------------------------------------------------------
+
+	/// <summary>
+	/// Get geographic coordinates of the localPoint (in a sphere's
+	/// coordinate system), or the point where the line localPoint-sphere center 
 	/// intersects surface of the sphere).
 	/// </summary>
-	public GeoCoord WorldPoint2GeoCoord(Vector3 worldPoint) {
-		// lp - Local Point.
-		Vector3 lp = transform.InverseTransformPoint(worldPoint);
+	public GeoCoord LocalPoint2GeoCoord(Vector3 localPoint) {
 		GeoCoord result = new GeoCoord(
-			Mathf.Atan2(lp.y, Mathf.Sqrt(lp.x*lp.x + lp.z*lp.z)),
-			Mathf.Atan2(lp.z, lp.x)
+			Mathf.Atan2(localPoint.y, Mathf.Sqrt(localPoint.x * localPoint.x + localPoint.z * localPoint.z)),
+			Mathf.Atan2(localPoint.z, localPoint.x)
 		);
 
 		// Radians to degrees.
@@ -35,10 +50,10 @@ public class SphericalGeometry : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Get coordinates (in world space) of the point described
-	/// by given geographic coordinates.
+	/// Get coordinates (in sphere's coordinate system)
+	/// of the point described by given geographic coordinates.
 	/// </summary>
-	public Vector3 GeoCoord2WorldPoint(GeoCoord coords) {
+	public Vector3 GeoCoord2LocalPoint(GeoCoord coords) {
 		float lat = coords.latitude * Mathf.Deg2Rad;
 		float lng = coords.longitude * Mathf.Deg2Rad;
 
@@ -48,9 +63,20 @@ public class SphericalGeometry : MonoBehaviour {
 			Mathf.Sin(lng) * Mathf.Cos(lat)
 		);
 
-		return transform.TransformPoint(radius * localPoint);
+		return localPoint;
 	}
 
+	//------------------------------------------------------------
+
+	public Vector3 GetWorldPointAboveGround(Vector3 worldPoint, float height) {
+		Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
+		return transform.TransformPoint(GetLocalPointAboveGround(localPoint, height));
+	}
+
+	public Vector3 GetLocalPointAboveGround(Vector3 localPoint, float height) {
+		Vector3 r = localPoint;
+		return (1 + height) * r;
+	}
 
 	//------------------------------------------------------------
 
@@ -69,6 +95,57 @@ public class SphericalGeometry : MonoBehaviour {
 		public override string ToString() {
 			return string.Format("{{{0:0.0}, {1:0.0}}}", latitude, longitude);
 		}
+	}
+
+	//------------------------------------------------------------
+
+	/// <summary>
+	/// A base class for any line of interest on the sphere's surface.
+	/// </summary>
+	public abstract class GeoLine {
+
+		public GeoLine(SphericalGeometry outerInstance, GeoCoord startPoint, GeoCoord endPoint, int numberOfPoints) {
+			if (numberOfPoints < 2)
+				throw new System.ArgumentException($"Invalid number of points. Expected: >= 2, provided: {numberOfPoints}");
+
+			outer = outerInstance;
+
+			Points = new Vector3[numberOfPoints];
+			this.startPoint = startPoint;
+			this.endPoint = endPoint;
+			Points[0] = outer.GeoCoord2LocalPoint(startPoint);
+			Points[numberOfPoints - 1] = outer.GeoCoord2LocalPoint(endPoint);
+
+			ComputePoints();
+		}
+
+		/// <summary>
+		/// Modify height of each point, according to func. func receives value
+		/// from range [0, 1] that indicates progress along the path.
+		/// 0: line's starting point. 1: end point.
+		/// </summary>
+		/// <param name="func"></param>
+		public void AdjustHeight(System.Func<float, float> func) {
+			for (int i = 0; i < Points.Length; ++i) {
+				float percent = i / (float)(Points.Length - 1);
+				Points[i] = outer.GetLocalPointAboveGround(Points[i], func(percent));
+			}
+		}
+
+		/// <summary>
+		/// Array of points in sphere's coordinate system.
+		/// </summary>
+		public Vector3[] Points { get; }
+
+		/// <summary>
+		/// Compute all points along the line of interest. Note that
+		/// the start & end points are already known.
+		/// </summary>
+		protected abstract void ComputePoints();
+
+		protected SphericalGeometry outer;
+		protected GeoCoord startPoint;
+		protected GeoCoord endPoint;
 	}
 
 	//------------------------------------------------------------
