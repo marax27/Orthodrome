@@ -69,8 +69,8 @@ public class SphericalGeometry : MonoBehaviour {
 	//------------------------------------------------------------
 
 	public Vector3 GetWorldPointAboveGround(Vector3 worldPoint, float height) {
-		Vector3 r = worldPoint - transform.position;
-		return worldPoint + height * r.normalized;
+		Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
+		return transform.TransformPoint(GetLocalPointAboveGround(localPoint, height));
 	}
 
 	public Vector3 GetLocalPointAboveGround(Vector3 localPoint, float height) {
