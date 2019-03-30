@@ -14,17 +14,38 @@ public class SphericalGeometry : MonoBehaviour {
 		radius = GetComponent<SphereCollider>().radius;
 	}
 
+	//------------------------------------------------------------
+
 	/// <summary>
-	/// Get geographic coordinates of the worldPoint
-	/// (or the point where the line worldPoint-sphere center
-	/// intersects surface of the sphere).
+	/// Get geographic coordinates of the worldPoint, or the point where
+	/// the line worldPoint-sphere center intersects surface of the sphere).
 	/// </summary>
 	public GeoCoord WorldPoint2GeoCoord(Vector3 worldPoint) {
-		// lp - Local Point.
-		Vector3 lp = transform.InverseTransformPoint(worldPoint);
+		Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
+		return LocalPoint2GeoCoord(localPoint);
+	}
+
+	/// <summary>
+	/// Get coordinates (in world space) of the point described
+	/// by given geographic coordinates.
+	/// </summary>
+	public Vector3 GeoCoord2WorldPoint(GeoCoord coords) {
+		Vector3 localPoint = GeoCoord2LocalPoint(coords);
+		return transform.TransformPoint(radius * localPoint);
+	}
+
+
+	//------------------------------------------------------------
+
+	/// <summary>
+	/// Get geographic coordinates of the localPoint (in a sphere's
+	/// coordinate system), or the point where the line localPoint-sphere center 
+	/// intersects surface of the sphere).
+	/// </summary>
+	public GeoCoord LocalPoint2GeoCoord(Vector3 localPoint) {
 		GeoCoord result = new GeoCoord(
-			Mathf.Atan2(lp.y, Mathf.Sqrt(lp.x*lp.x + lp.z*lp.z)),
-			Mathf.Atan2(lp.z, lp.x)
+			Mathf.Atan2(localPoint.y, Mathf.Sqrt(localPoint.x * localPoint.x + localPoint.z * localPoint.z)),
+			Mathf.Atan2(localPoint.z, localPoint.x)
 		);
 
 		// Radians to degrees.
@@ -35,10 +56,10 @@ public class SphericalGeometry : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Get coordinates (in world space) of the point described
-	/// by given geographic coordinates.
+	/// Get coordinates (in sphere's coordinate system)
+	/// of the point described by given geographic coordinates.
 	/// </summary>
-	public Vector3 GeoCoord2WorldPoint(GeoCoord coords) {
+	public Vector3 GeoCoord2LocalPoint(GeoCoord coords) {
 		float lat = coords.latitude * Mathf.Deg2Rad;
 		float lng = coords.longitude * Mathf.Deg2Rad;
 
@@ -48,9 +69,8 @@ public class SphericalGeometry : MonoBehaviour {
 			Mathf.Sin(lng) * Mathf.Cos(lat)
 		);
 
-		return transform.TransformPoint(radius * localPoint);
+		return localPoint;
 	}
-
 
 	//------------------------------------------------------------
 
